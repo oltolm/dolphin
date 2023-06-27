@@ -13,8 +13,8 @@ AbstractFramebuffer::AbstractFramebuffer(AbstractTexture* color_attachment,
                                          u32 layers, u32 samples)
     : m_color_attachment(color_attachment), m_depth_attachment(depth_attachment),
       m_additional_color_attachments(std::move(additional_color_attachments)),
-      m_color_format(color_format), m_depth_format(depth_format), m_width(width), m_height(height),
-      m_layers(layers), m_samples(samples)
+      m_color_format(color_format), m_depth_format(depth_format),
+      m_width(width), m_height(height), m_layers(layers), m_samples(samples)
 {
 }
 
