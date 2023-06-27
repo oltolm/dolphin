@@ -79,10 +79,13 @@ VideoBackendBase* g_video_backend = nullptr;
 // performance graphics mode or using the IGP.
 // AMD drivers >= 13.35 do the same, but for the variable
 // named AmdPowerXpressRequestHighPerformance instead.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-variable-declarations"
 extern "C" {
 __declspec(dllexport) DWORD NvOptimusEnablement = 1;
 __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
+#pragma clang diagnostic pop
 #endif
 
 std::string VideoBackendBase::BadShaderFilename(const char* shader_stage, int counter)
