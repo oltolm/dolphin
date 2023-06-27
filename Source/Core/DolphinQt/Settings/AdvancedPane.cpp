@@ -188,7 +188,8 @@ void AdvancedPane::CreateLayout()
   };
 
   vi_text();
-  connect(m_vi_rate_override_slider, &QSlider::valueChanged, this, vi_text);
+  connect(m_vi_rate_override_slider, &QSlider::valueChanged, this,
+          [vi_text]() { vi_text(); });
 
   m_vi_rate_override_checkbox->SetDescription(
       tr("Adjusts the VBI frequency. Also adjusts the emulated CPU's "
