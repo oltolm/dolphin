@@ -315,7 +315,8 @@ void SetUserDirectory(std::string custom_path)
       SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_DEFAULT, nullptr, appdata.put()));
 
   // Check our registry keys
-  wil::unique_hkey hkey;
+  HKEY hkey;
+  Common::ScopeGuard hkey_guard([&] { RegCloseKey(hkey); });
   DWORD local = 0;
   std::unique_ptr<TCHAR[]> configPath;
   if (RegOpenKeyEx(HKEY_CURRENT_USER, TEXT("Software\\Dolphin Emulator"), 0, KEY_QUERY_VALUE,
