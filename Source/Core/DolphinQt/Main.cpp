@@ -111,10 +111,6 @@ static bool QtMsgAlertHandler(const char* caption, const char* text, bool yes_no
   return false;
 }
 
-#ifdef _WIN32
-#define main app_main
-#endif
-
 int main(int argc, char* argv[])
 {
 #ifdef _WIN32
@@ -310,5 +306,4 @@ int WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int)
   return main(argc, argv.data());
 }
 
-#undef main
 #endif
