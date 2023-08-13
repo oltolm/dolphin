@@ -20,11 +20,17 @@
 
 #ifdef _WIN32
 #include <fmt/format.h>
+#include <windows.h>
 
+#ifdef _MSC_VER
 #include <winrt/Windows.UI.ViewManagement.h>
+#endif
 
 #include <QTabBar>
 #include <QToolButton>
+
+bool WINAPI ShouldAppsUseDarkMode(); // ordinal 132
+bool WINAPI ShouldSystemUseDarkMode(); // ordinal 138
 #endif
 
 #include "AudioCommon/AudioCommon.h"
@@ -150,6 +156,7 @@ void Settings::InitDefaultPalette()
 void Settings::UpdateSystemDark()
 {
 #ifdef _WIN32
+#ifdef _MSC_VER
   // Check if the system is set to dark mode so we can set the default theme and window
   // decorations accordingly.
   {
@@ -160,6 +167,18 @@ void Settings::UpdateSystemDark()
     const bool is_system_dark = 5 * color.G + 2 * color.R + color.B > 8 * 128;
     Settings::Instance().SetSystemDark(is_system_dark);
   }
+#else
+  HMODULE hDll = LoadLibraryW(L"uxtheme.dll");
+  if (hDll != nullptr)
+  {
+    auto _ShouldAppsUseDarkMode = (decltype(&ShouldAppsUseDarkMode))GetProcAddress(hDll, MAKEINTRESOURCEA(132));
+    if (_ShouldAppsUseDarkMode)
+    {
+      const bool is_system_dark = _ShouldAppsUseDarkMode();
+      Settings::Instance().SetSystemDark(is_system_dark);
+    }
+  }
+#endif
 #endif
 }
 
