@@ -810,6 +810,10 @@ if(MSVC)
   target_link_libraries(core PRIVATE use_pch)
 endif()
 
+if(USE_ASAN)
+  set_source_files_properties(MemTools.cpp PROPERTIES COMPILE_DEFINITIONS USE_ASAN)
+endif()
+
 if(USE_RETRO_ACHIEVEMENTS)
   target_link_libraries(core PUBLIC rcheevos)
   target_compile_definitions(core PUBLIC -DUSE_RETRO_ACHIEVEMENTS)
