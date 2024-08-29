@@ -47,7 +47,7 @@ int CurrentThreadId()
 
 void SetThreadAffinity(std::thread::native_handle_type thread, u32 mask)
 {
-  SetThreadAffinityMask(thread, mask);
+  SetThreadAffinityMask((HANDLE)thread, mask);
 }
 
 void SetCurrentThreadAffinity(u32 mask)
@@ -66,6 +66,7 @@ void SwitchCurrentThread()
   SwitchToThread();
 }
 
+#ifdef _MSC_VER
 // Sets the debugger-visible name of the current thread.
 // Uses trick documented in:
 // https://docs.microsoft.com/en-us/visualstudio/debugger/how-to-set-a-thread-name-in-native-code
@@ -96,13 +97,16 @@ static void SetCurrentThreadNameViaException(const char* name)
   {
   }
 }
+#endif
+
+using SetThreadDescriptionFn = HRESULT(*)(HANDLE hThread, PCWSTR lpThreadDescription);
 
 static void SetCurrentThreadNameViaApi(const char* name)
 {
   // If possible, also set via the newer API. On some versions of Server it needs to be manually
   // resolved. This API allows being able to observe the thread name even if a debugger wasn't
   // attached when the name was set (see above link for more info).
-  static auto pSetThreadDescription = (decltype(&SetThreadDescription))GetProcAddress(
+  static auto pSetThreadDescription = (SetThreadDescriptionFn)GetProcAddress(
       GetModuleHandleA("kernel32"), "SetThreadDescription");
   if (pSetThreadDescription)
   {
@@ -112,7 +116,9 @@ static void SetCurrentThreadNameViaApi(const char* name)
 
 void SetCurrentThreadName(const char* name)
 {
+#ifdef _MSC_VER
   SetCurrentThreadNameViaException(name);
+#endif
   SetCurrentThreadNameViaApi(name);
 }
 
