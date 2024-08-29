@@ -21,6 +21,16 @@
 #include "Common/MsgHandler.h"
 #include "Common/StringUtil.h"
 
+#ifndef _XCR_XFEATURE_ENABLED_MASK
+#define _XCR_XFEATURE_ENABLED_MASK 0
+#endif
+
+#if defined(_MSC_VER) || defined(__clang__)
+#include <intrin.h>
+#else
+#include <cpuid.h>
+#endif
+
 #ifndef _WIN32
 
 #ifdef __FreeBSD__
