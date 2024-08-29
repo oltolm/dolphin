@@ -5,8 +5,8 @@
 
 #include <fmt/format.h>
 #include <string>
+#include <windows.h>
 #include <winerror.h>
-#include <winrt/base.h>
 
 #include "Common/CommonTypes.h"
 
@@ -32,16 +32,5 @@ struct fmt::formatter<Common::HRWrap>
   {
     return fmt::format_to(ctx.out(), "{} ({:#010x})", Common::GetHResultMessage(hr.m_hr),
                           static_cast<u32>(hr.m_hr));
-  }
-};
-
-template <>
-struct fmt::formatter<winrt::hresult>
-{
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-  template <typename FormatContext>
-  auto format(const winrt::hresult& hr, FormatContext& ctx) const
-  {
-    return fmt::format_to(ctx.out(), "{} ({:#010x})", Common::GetHResultMessage(hr), hr.value);
   }
 };
