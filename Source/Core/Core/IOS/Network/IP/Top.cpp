@@ -610,8 +610,8 @@ IPCReply NetIPTopDevice::HandleGetPeerNameRequest(const IOCtlRequest& request)
 
 IPCReply NetIPTopDevice::HandleGetHostIDRequest(const IOCtlRequest& request)
 {
-  const DefaultInterface interface = GetSystemDefaultInterfaceOrFallback();
-  const u32 host_ip = Common::swap32(interface.inet);
+  const DefaultInterface iface = GetSystemDefaultInterfaceOrFallback();
+  const u32 host_ip = Common::swap32(iface.inet);
   INFO_LOG_FMT(IOS_NET, "IOCTL_SO_GETHOSTID = {}.{}.{}.{}", host_ip >> 24, (host_ip >> 16) & 0xFF,
                (host_ip >> 8) & 0xFF, host_ip & 0xFF);
   return IPCReply(host_ip);
@@ -983,10 +983,10 @@ IPCReply NetIPTopDevice::HandleGetInterfaceOptRequest(const IOCtlVRequest& reque
     // XXX: this isn't exactly right; the buffer can be larger than 12 bytes, in which case
     // SO can write 12 more bytes.
     memory.Write_U32(0xC, request.io_vectors[1].address);
-    const DefaultInterface interface = GetSystemDefaultInterfaceOrFallback();
-    memory.Write_U32(Common::swap32(interface.inet), request.io_vectors[0].address);
-    memory.Write_U32(Common::swap32(interface.netmask), request.io_vectors[0].address + 4);
-    memory.Write_U32(Common::swap32(interface.broadcast), request.io_vectors[0].address + 8);
+    const DefaultInterface iface = GetSystemDefaultInterfaceOrFallback();
+    memory.Write_U32(Common::swap32(iface.inet), request.io_vectors[0].address);
+    memory.Write_U32(Common::swap32(iface.netmask), request.io_vectors[0].address + 4);
+    memory.Write_U32(Common::swap32(iface.broadcast), request.io_vectors[0].address + 8);
     break;
   }
 
