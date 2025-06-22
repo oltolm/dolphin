@@ -6,6 +6,7 @@
 #include <optional>
 #include <string>
 #ifdef _WIN32
+#include <windows.h>
 #include <SetupAPI.h>
 #include <cfgmgr32.h>
 #include <devpropdef.h>
@@ -22,6 +23,7 @@
   }
 
 #else  // WIN32
+#ifndef __MINGW32__
 // Function Cross-Compatibility
 #define strcasecmp _stricmp
 #define strncasecmp _strnicmp
@@ -35,6 +37,7 @@
 #define stat _stat64
 #define fstat _fstat64
 #define fileno _fileno
+#endif
 
 extern "C" {
 __declspec(dllimport) void __stdcall DebugBreak(void);
