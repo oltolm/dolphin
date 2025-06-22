@@ -11,6 +11,7 @@
 #include <Windows.h>
 #include <climits>
 #include <dwmapi.h>
+#include <thread>
 
 #include "VideoCommon/Present.h"
 #include "resource.h"
