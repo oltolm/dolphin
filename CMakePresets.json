@@ -18,6 +18,11 @@
                 "CMAKE_BUILD_TYPE": "Debug",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
               }
+        },
+        {
+          "name": "msvc",
+          "binaryDir": "build-msvc",
+          "generator": "Ninja Multi-Config"
         }
     ]
 }
