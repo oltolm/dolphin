@@ -12,6 +12,7 @@ endif()
 
 if(WIN32)
   target_sources(dolphin-nogui PRIVATE PlatformWin32.cpp)
+  target_link_libraries(dolphin-nogui PRIVATE Dwmapi)
 endif()
 
 if(APPLE)
@@ -41,6 +42,13 @@ PRIVATE
   cpp-optparse
 )
 
+if(WIN32)
+  target_link_libraries(dolphin-nogui PRIVATE d3d11)
+  if(NOT MSVC)
+    target_link_options(dolphin-nogui PRIVATE -municode)
+  endif()
+endif()
+
 if(APPLE)
   target_link_libraries(dolphin-nogui
     PRIVATE
@@ -52,7 +60,7 @@ endif()
 
 if(WIN32)
   # needed for adjusting window decorations with DwmSetWindowAttribute
-  target_link_libraries(dolphin-nogui PRIVATE dwmapi.lib)
+  target_link_libraries(dolphin-nogui PRIVATE dwmapi)
 endif()
 
 if(MSVC)
