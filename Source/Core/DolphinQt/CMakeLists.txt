@@ -21,7 +21,7 @@ message(STATUS "Found Qt version ${Qt6_VERSION}")
 
 set_property(TARGET Qt6::Core PROPERTY INTERFACE_COMPILE_FEATURES "")
 
-add_executable(dolphin-emu
+add_executable(dolphin-emu WIN32
   AboutDialog.cpp
   AboutDialog.h
   CheatSearchFactoryWidget.cpp
@@ -462,10 +462,13 @@ endif()
 if (WIN32)
   target_link_libraries(dolphin-emu
   PRIVATE
-    gdi32.lib
-    shell32.lib
-    dwmapi.lib # Needed to set window decorations for dark theme
+    gdi32
+    shell32
+    dwmapi # Needed to set window decorations for dark theme
   )
+  if(NOT MSVC)
+    target_link_options(dolphin-emu PRIVATE -municode)
+  endif()
 endif()
 
 if (MSVC)
