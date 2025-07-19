@@ -181,6 +181,7 @@ if(CMAKE_SYSROOT)
   set(ENV{PKG_CONFIG_SYSROOT_DIR} "${CMAKE_SYSROOT}")
 endif()
 
+if (MSVC)
 # Output directory for the Dolphin binary
 # We need to use a generator expression here to ensure that multi-config generators
 # (like Visual Studio) put the binaries in the right place.
@@ -190,6 +191,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/Binaries>)
 # Output directory for PDB files. PDBs are only generated on Windows with MSVC.
 # We set a common directory for all PDBs to avoid littering the Binaries/ directory.
 set(CMAKE_PDB_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/pdb>)
+endif()
 
 if(ENABLE_CCACHE)
   include(CCache)
@@ -517,7 +519,7 @@ if(ENABLE_EGL)
 endif()
 
 if(ENCODE_FRAMEDUMPS)
-  if(WIN32)
+  if(MSVC)
     if(_M_X86_64)
       set(FFMPEG_DIR Externals/FFmpeg-bin/x64)
     elseif(_M_ARM_64)
@@ -537,7 +539,7 @@ if(ENCODE_FRAMEDUMPS)
     if(WIN32)
       # Our prebuilt binaries depend on Bcrypt
       set_property(TARGET FFmpeg::avutil APPEND PROPERTY
-        INTERFACE_LINK_LIBRARIES "Bcrypt.lib"
+        INTERFACE_LINK_LIBRARIES Bcrypt
       )
     endif()
   else()
