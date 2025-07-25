@@ -149,7 +149,7 @@ public:
   inline operator T() const
   {
     T result;
-    std::memcpy(&result, m_ptr, sizeof(result));
+    std::memcpy((void*)&result, m_ptr, sizeof(result));
     return result;
   }
 
