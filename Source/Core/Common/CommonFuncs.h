@@ -6,8 +6,8 @@
 #include <optional>
 #include <string>
 #ifdef _WIN32
-#include <SetupAPI.h>
-#include <cfgmgr32.h>
+#include <windows.h>
+#include <setupapi.h>
 #include <devpropdef.h>
 #endif
 

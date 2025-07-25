@@ -208,6 +208,7 @@ elseif(WIN32)
     kernel32.lib
     shlwapi.lib
     winmm.lib
+    setupapi.lib
   )
   if (_M_X86_64)
     target_link_libraries(common PRIVATE opengl32.lib)
