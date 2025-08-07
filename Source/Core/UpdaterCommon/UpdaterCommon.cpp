@@ -34,6 +34,41 @@
 #include <filesystem>
 #endif
 
+bool ProgressCallback(s64 total, s64 now, s64, s64);
+bool HexDecode(const std::string& hex, u8* buffer, size_t size);
+std::optional<std::string> GzipInflate(const std::string& data);
+bool VerifySignature(const std::string& data, const std::string& b64_signature);
+void FlushLog();
+bool DownloadContent(const std::vector<TodoList::DownloadOp>& to_download,
+                     const std::string& content_base_url, const std::string& temp_path);
+bool PlatformVersionCheck(const std::vector<TodoList::UpdateOp>& to_update,
+                          const std::string& install_base_path, const std::string& temp_dir);
+TodoList ComputeActionsToDo(Manifest this_manifest, Manifest next_manifest);
+void CleanUpTempDir(const std::string& temp_dir, const TodoList& todo);
+bool BackupFile(const std::string& path);
+bool DeleteObsoleteFiles(const std::vector<TodoList::DeleteOp>& to_delete,
+                         const std::string& install_base_path);
+bool UpdateFiles(const std::vector<TodoList::UpdateOp>& to_update,
+                 const std::string& install_base_path, const std::string& temp_path);
+bool PerformUpdate(const TodoList& todo, const std::string& install_base_path,
+                   const std::string& content_base_url, const std::string& temp_path);
+void FatalError(const std::string& message);
+std::optional<Manifest> ParseManifest(const std::string& manifest);
+std::optional<Manifest> FetchAndParseManifest(const std::string& url);
+
+struct Options
+{
+  std::string this_manifest_url;
+  std::string next_manifest_url;
+  std::string content_store_url;
+  std::string install_base_path;
+  std::optional<std::string> binary_to_restart;
+  std::optional<u32> parent_pid;
+  std::optional<std::string> log_file;
+};
+
+std::optional<Options> ParseCommandLine(std::vector<std::string>& args);
+
 // Refer to docs/autoupdate_overview.md for a detailed overview of the autoupdate process
 
 // Public key used to verify update manifests.
@@ -602,17 +637,6 @@ std::optional<Manifest> FetchAndParseManifest(const std::string& url)
 
   return ParseManifest(decompressed);
 }
-
-struct Options
-{
-  std::string this_manifest_url;
-  std::string next_manifest_url;
-  std::string content_store_url;
-  std::string install_base_path;
-  std::optional<std::string> binary_to_restart;
-  std::optional<u32> parent_pid;
-  std::optional<std::string> log_file;
-};
 
 std::optional<Options> ParseCommandLine(std::vector<std::string>& args)
 {
