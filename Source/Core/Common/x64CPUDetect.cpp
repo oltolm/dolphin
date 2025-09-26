@@ -56,7 +56,12 @@ static u64 xgetbv(u32 index)
 
 #else
 
+#ifdef _MSC_VER
 constexpr u32 XCR_XFEATURE_ENABLED_MASK = _XCR_XFEATURE_ENABLED_MASK;
+#else
+#include <cpuid.h>
+constexpr u32 XCR_XFEATURE_ENABLED_MASK = 0;
+#endif
 
 static u64 xgetbv(u32 index)
 {
