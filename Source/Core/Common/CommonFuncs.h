@@ -17,6 +17,7 @@
   }
 
 #else  // WIN32
+#ifndef __MINGW32__
 // Function Cross-Compatibility
 #define strcasecmp _stricmp
 #define strncasecmp _strnicmp
@@ -30,6 +31,7 @@
 #define stat _stat64
 #define fstat _fstat64
 #define fileno _fileno
+#endif
 
 extern "C" {
 __declspec(dllimport) void __stdcall DebugBreak(void);
