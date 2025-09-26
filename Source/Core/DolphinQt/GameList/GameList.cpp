@@ -5,6 +5,7 @@
 #include <QCoreApplication>
 #include <shlobj.h>
 #include <wil/com.h>
+#include <wrl/client.h>
 
 // This file uses some identifiers which are defined as macros in Windows headers.
 // Include and undefine the macros first thing we do to solve build errors.
@@ -841,8 +842,9 @@ bool GameList::AddShortcutToDesktop()
     return Common::Contains(illegal_characters, ch);
   });
 
-  std::wstring desktop_path = std::wstring(desktop.get()) + UTF8ToTStr("\\" + game_name + ".lnk");
-  auto persist_file = shell_link.try_query<IPersistFile>();
+  std::wstring desktop_path = std::wstring(desktop) + UTF8ToTStr("\\" + game_name + ".lnk");
+  Microsoft::WRL::ComPtr<IPersistFile> persist_file;
+  shell_link.As(&persist_file);
   if (!persist_file)
     return false;
 
