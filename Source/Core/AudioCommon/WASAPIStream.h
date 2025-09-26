@@ -17,6 +17,7 @@
 #include <thread>
 #include <vector>
 #include <wrl/client.h>
+#endif
 
 #include "AudioCommon/SoundStream.h"
 
@@ -24,8 +25,6 @@ struct IAudioClient;
 struct IAudioRenderClient;
 struct IMMDevice;
 struct IMMDeviceEnumerator;
-
-#endif
 
 class WASAPIStream final : public SoundStream
 {
