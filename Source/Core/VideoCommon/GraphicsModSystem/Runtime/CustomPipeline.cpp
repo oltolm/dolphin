@@ -31,7 +31,7 @@ bool IsBuiltInMacro(std::string_view value)
   return Common::Contains(built_in, value);
 }
 
-std::vector<std::string> GlobalConflicts(std::string_view source)
+static std::vector<std::string> GlobalConflicts(std::string_view source)
 {
   std::string_view last_identifier = "";
   std::vector<std::string> global_result;

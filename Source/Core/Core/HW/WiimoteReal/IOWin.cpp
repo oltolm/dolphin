@@ -643,7 +643,7 @@ bool WiimoteWindows::IsConnected() const
 }
 
 // See http://wiibrew.org/wiki/Wiimote for the Report IDs and its sizes
-size_t GetReportSize(u8 rid)
+static size_t GetReportSize(u8 rid)
 {
   using namespace WiimoteCommon;
 
