@@ -5,6 +5,7 @@
 #include <QCoreApplication>
 #include <shlobj.h>
 #include <wil/com.h>
+#include <wrl/client.h>
 
 // This file uses some identifiers which are defined as macros in Windows headers.
 // Include and undefine the macros first thing we do to solve build errors.
