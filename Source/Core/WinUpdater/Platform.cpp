@@ -246,7 +246,7 @@ static VersionCheckResult OSVersionCheck(const BuildInfo& build_info)
   return result;
 }
 
-std::optional<BuildInfos> InitBuildInfos(const std::vector<TodoList::UpdateOp>& to_update,
+static std::optional<BuildInfos> InitBuildInfos(const std::vector<TodoList::UpdateOp>& to_update,
                                          const std::string& install_base_path,
                                          const std::string& temp_dir)
 {
@@ -278,7 +278,7 @@ std::optional<BuildInfos> InitBuildInfos(const std::vector<TodoList::UpdateOp>& 
   return build_infos;
 }
 
-bool CheckBuildInfo(const BuildInfos& build_infos)
+static bool CheckBuildInfo(const BuildInfos& build_infos)
 {
   // The existing BuildInfo may have been modified. Be careful not to overly trust its contents!
 
