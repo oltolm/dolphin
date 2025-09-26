@@ -30,7 +30,9 @@
 #include "Core/HW/WiimoteCommon/WiimoteConstants.h"
 #include "Core/HW/WiimoteCommon/WiimoteReport.h"
 
+#ifdef _MSC_VER
 #pragma comment(lib, "Bthprops.lib")
+#endif
 
 namespace WiimoteReal
 {
@@ -64,9 +66,11 @@ enum class AuthenticationMethod : bool
 
 // BluetoothAuthenticateDevice is marked as deprecated.
 // BluetoothAuthenticateDeviceEx requires a bunch of rigmarole.. maybe some other day.
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4995)
-bool AuthenticateWiimote(HANDLE radio_handle, const BLUETOOTH_RADIO_INFO& radio_info,
+#endif
+static bool AuthenticateWiimote(HANDLE radio_handle, const BLUETOOTH_RADIO_INFO& radio_info,
                          BLUETOOTH_DEVICE_INFO_STRUCT* btdi, AuthenticationMethod auth_method)
 {
   // When pressing the sync button, the remote expects the host's address as the pass key.
@@ -101,9 +105,11 @@ bool AuthenticateWiimote(HANDLE radio_handle, const BLUETOOTH_RADIO_INFO& radio_
 
   return true;
 }
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
-std::optional<USBUtils::DeviceInfo> GetDeviceInfo(const WCHAR* hid_iface)
+static std::optional<USBUtils::DeviceInfo> GetDeviceInfo(const WCHAR* hid_iface)
 {
   // libusb opens without read/write access to get attributes, so we'll do that too.
   constexpr auto open_access = 0;
@@ -262,14 +268,14 @@ u32 RemoveWiimoteBluetoothDevices(std::invocable<BLUETOOTH_DEVICE_INFO> auto&& s
 // If they are *not* authenticated there's apparently no feasible way to reconnect them.
 // We remove these problematic remembered devices so we can reconnect them.
 // Otherwise, the user would need to manually deleting the device in control panel.
-u32 RemoveUnusableWiimoteBluetoothDevices()
+static u32 RemoveUnusableWiimoteBluetoothDevices()
 {
   return RemoveWiimoteBluetoothDevices([](const BLUETOOTH_DEVICE_INFO& btdi) {
     return btdi.fRemembered && !btdi.fConnected && !btdi.fAuthenticated;
   });
 }
 
-u32 DiscoverAndPairWiimotes(u8 inquiry_length,
+static u32 DiscoverAndPairWiimotes(u8 inquiry_length,
                             std::optional<AuthenticationMethod> auth_method = std::nullopt)
 {
   u32 success_count = 0;
@@ -335,7 +341,7 @@ void WiimoteScannerWindows::Update()
 }
 
 // See http://wiibrew.org/wiki/Wiimote for the Report IDs and its sizes
-size_t GetReportSize(u8 rid)
+static size_t GetReportSize(u8 rid)
 {
   using namespace WiimoteCommon;
 
