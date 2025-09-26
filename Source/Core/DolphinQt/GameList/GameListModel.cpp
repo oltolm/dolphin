@@ -21,6 +21,9 @@
 #include "UICommon/GameFile.h"
 #include "UICommon/UICommon.h"
 
+#pragma push_macro("RemoveDirectory")
+#undef RemoveDirectory
+
 const QSize GAMECUBE_BANNER_SIZE(96, 32);
 
 GameListModel::GameListModel(QObject* parent) : QAbstractTableModel(parent)
@@ -529,3 +532,5 @@ void GameListModel::OnEmulationStateChanged(Core::State state)
     m_timer.Reload();
   }
 }
+
+#pragma pop_macro("RemoveDirectory")
