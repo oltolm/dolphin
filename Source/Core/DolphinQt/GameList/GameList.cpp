@@ -4,7 +4,7 @@
 #ifdef _WIN32
 #include <QCoreApplication>
 #include <shlobj.h>
-#include <wil/com.h>
+#include "Common/wil/resource.h"
 #include <wrl/client.h>
 
 // This file uses some identifiers which are defined as macros in Windows headers.
@@ -833,7 +833,7 @@ bool GameList::AddShortcutToDesktop()
     return false;
 
   wil::unique_cotaskmem_string desktop;
-  if (FAILED(SHGetKnownFolderPath(FOLDERID_Desktop, KF_FLAG_NO_ALIAS, nullptr, &desktop)))
+  if (FAILED(SHGetKnownFolderPath(FOLDERID_Desktop, KF_FLAG_NO_ALIAS, nullptr, desktop.put())))
     return false;
 
   std::string game_name = game->GetName(Core::TitleDatabase());
@@ -843,7 +843,7 @@ bool GameList::AddShortcutToDesktop()
     return Common::Contains(illegal_characters, ch);
   });
 
-  std::wstring desktop_path = std::wstring(desktop) + UTF8ToTStr("\\" + game_name + ".lnk");
+  std::wstring desktop_path = std::wstring(desktop.get()) + UTF8ToTStr("\\" + game_name + ".lnk");
   Microsoft::WRL::ComPtr<IPersistFile> persist_file;
   shell_link.As(&persist_file);
   if (!persist_file)

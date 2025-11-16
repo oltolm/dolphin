@@ -9,7 +9,7 @@
 #include <Windows.h>
 #include <mmreg.h>
 #include <objbase.h>
-#include <wil/resource.h>
+#include "Common/wil/resource.h"
 // clang-format on
 
 #include <atomic>

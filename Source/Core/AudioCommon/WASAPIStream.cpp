@@ -10,7 +10,7 @@
 #include <Audioclient.h>
 #include <mmdeviceapi.h>
 #include <functiondiscoverykeys_devpkey.h>
-#include <wil/resource.h>
+#include "Common/wil/resource.h"
 // clang-format on
 
 #include <thread>
@@ -280,8 +280,7 @@ bool WASAPIStream::SetRunning(bool running)
     if (!HandleWinAPI("Failed to get IAudioRenderClient from IAudioClient", result))
       return false;
 
-    wil::unique_event_nothrow need_data_event;
-    need_data_event.create();
+    std::unique_ptr<HANDLE, Deleter> need_data_event{CreateEvent(NULL, FALSE, FALSE, NULL)};
 
     audio_client->SetEventHandle(need_data_event.get());
 
