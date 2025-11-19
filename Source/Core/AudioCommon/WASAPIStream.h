@@ -3,7 +3,7 @@
 
 #pragma once
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 
 // clang-format off
 #include <Windows.h>
@@ -28,7 +28,7 @@ struct IMMDeviceEnumerator;
 
 class WASAPIStream final : public SoundStream
 {
-#ifdef _MSC_VER
+#ifdef _WIN32
 public:
   explicit WASAPIStream();
   ~WASAPIStream() override;
