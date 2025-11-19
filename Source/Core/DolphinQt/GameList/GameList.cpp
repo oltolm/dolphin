@@ -816,9 +816,10 @@ void GameList::OpenGCSaveFolder()
 #ifdef _WIN32
 bool GameList::AddShortcutToDesktop()
 {
-  auto init = wil::CoInitializeEx_failfast(COINIT_APARTMENTTHREADED);
-  auto shell_link = wil::CoCreateInstanceNoThrow<ShellLink, IShellLink>();
-  if (!shell_link)
+  ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+  wil::unique_couninitialize_call init;
+  Microsoft::WRL::ComPtr<IShellLink> shell_link;
+  if (FAILED(CoCreateInstance(__uuidof(ShellLink), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&shell_link))))
     return false;
 
   std::wstring dolphin_path = QCoreApplication::applicationFilePath().toStdWString();
