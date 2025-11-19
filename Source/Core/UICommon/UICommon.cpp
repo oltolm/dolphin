@@ -218,10 +218,12 @@ void SetLocale(std::string locale_name)
     // setlocale sets the C locale, and global sets the C and C++ locales, so the call to setlocale
     // would be redundant if it wasn't for not having any other good way to check whether
     // the locale name is valid. (Constructing a std::locale object for an unsupported
-    // locale name throws std::runtime_error, and exception handling is disabled in Dolphin.)
+      // locale name throws std::runtime_error, and exception handling is disabled in Dolphin.)
+#ifndef __MINGW32__
     if (!std::setlocale(LC_ALL, adjusted_locale.c_str()))
       return false;
     std::locale::global(std::locale(adjusted_locale));
+#endif
     return true;
   };
 
