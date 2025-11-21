@@ -491,6 +491,8 @@ if (MSVC)
 endif()
 
 if(WIN32)
+  get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+
   target_sources(dolphin-emu PRIVATE DolphinQt.manifest DolphinQt.rc)
 
   set_target_properties(dolphin-emu PROPERTIES
@@ -501,36 +503,34 @@ if(WIN32)
 
   # Copy Sys dir
   add_custom_command(TARGET dolphin-emu POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E remove_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Sys"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/Data/Sys" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Sys"
+    COMMAND ${CMAKE_COMMAND} -E remove_directory "$<TARGET_FILE_DIR:dolphin-emu>/Sys"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/Data/Sys" "$<TARGET_FILE_DIR:dolphin-emu>/Sys"
   )
 
   # Copy COPYING
   add_custom_command(TARGET dolphin-emu POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/COPYING" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/COPYING"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/COPYING" "$<TARGET_FILE_DIR:dolphin-emu>/COPYING"
   )
 
   # Copy Licenses dir
   add_custom_command(TARGET dolphin-emu POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/LICENSES" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Licenses"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/LICENSES" "$<TARGET_FILE_DIR:dolphin-emu>/Licenses"
   )
 
   # Copy qt.conf
   add_custom_command(TARGET dolphin-emu POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/qt.conf.win" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/qt.conf"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/qt.conf.win" "$<TARGET_FILE_DIR:dolphin-emu>/qt.conf"
   )
 
-  if (ENABLE_AUTOUPDATE)
-    # Copy build_info.txt
-    add_custom_command(TARGET dolphin-emu POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_BINARY_DIR}/build_info.txt" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/build_info.txt"
-    )
-  endif()
+  # Copy Languages directory
+  add_custom_command(TARGET dolphin-emu POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_BINARY_DIR}/Languages" "$<TARGET_FILE_DIR:dolphin-emu>/Languages"
+  )
 
-  if (ENABLE_AUTOUPDATE)
+  if (MSVC)
     # Copy build_info.txt
     add_custom_command(TARGET dolphin-emu POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_BINARY_DIR}/build_info.txt" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/build_info.txt"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_BINARY_DIR}/build_info.txt" "$<TARGET_FILE_DIR:dolphin-emu>/build_info.txt"
     )
   endif()
 
@@ -566,7 +566,7 @@ if(GETTEXT_MSGFMT_EXECUTABLE)
   foreach(po ${LINGUAS})
     get_filename_component(lang ${po} NAME_WE)
     if(WIN32)
-      set(mo_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Languages)
+      set(mo_dir ${CMAKE_CURRENT_BINARY_DIR}/Languages)
       set(mo ${mo_dir}/${lang}.mo)
     else()
       set(mo_dir ${CMAKE_CURRENT_BINARY_DIR}/${lang})
