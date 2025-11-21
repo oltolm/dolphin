@@ -9,8 +9,8 @@ set_target_properties(tests PROPERTIES FOLDER Tests)
 target_link_libraries(tests PRIVATE fmt::fmt gtest::gtest core uicommon)
 add_test(NAME tests COMMAND tests)
 add_custom_command(TARGET tests POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E remove_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Sys"
-  COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/Data/Sys" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Sys"
+  COMMAND ${CMAKE_COMMAND} -E remove_directory "$<TARGET_FILE_DIR:dolphin-emu>/Sys"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/Data/Sys" "$<TARGET_FILE_DIR:dolphin-emu>/Sys"
 )
 add_dependencies(unittests tests)
 
