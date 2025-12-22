@@ -8,10 +8,10 @@
 
 #include "Common/CommonTypes.h"
 #include "DiscIO/Blob.h"
+#include "DiscIO/Filesystem.h"
 
 namespace DiscIO
 {
-class FileInfo;
 struct Partition;
 class Volume;
 
