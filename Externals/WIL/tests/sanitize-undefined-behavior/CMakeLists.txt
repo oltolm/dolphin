@@ -1,6 +1,8 @@
 
 add_executable(witest.ubsan)
 
+target_precompile_headers(witest.ubsan PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../pch.h)
+
 target_compile_options(witest.ubsan PRIVATE
     -fsanitize=undefined
     -fno-sanitize-recover=undefined # So we get test failures
@@ -16,10 +18,7 @@ set_property(TARGET witest.ubsan
 
 target_sources(witest.ubsan PUBLIC
     ${COMMON_SOURCES}
-    ${CMAKE_CURRENT_SOURCE_DIR}/../StlTests.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../TokenHelpersTests.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../UniqueWinRTEventTokenTests.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../WatcherTests.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../WinRTTests.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../WinVerifyTrustTest.cpp
+    ${DOWNLEVEL_SOURCES}
+    ${WINRT_SOURCES}
+    ${WIN11_DESTKTOP_SOURCES}
     )

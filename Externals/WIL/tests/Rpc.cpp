@@ -1,8 +1,10 @@
+#include "pch.h"
+
 #include "common.h"
 
 #include <wil/rpc_helpers.h>
 
-void RpcMethodReturnsVoid(ULONG toRaise)
+static void RpcMethodReturnsVoid(ULONG toRaise)
 {
     if (toRaise)
     {
@@ -10,32 +12,34 @@ void RpcMethodReturnsVoid(ULONG toRaise)
     }
 }
 
-struct FOO_CONTEXT_T {};
+struct FOO_CONTEXT_T
+{
+};
 using FOO_CONTEXT = FOO_CONTEXT_T*;
 using PFOO_CONTEXT = FOO_CONTEXT*;
 
-void CloseContextHandle(_Inout_ PFOO_CONTEXT)
+static void CloseContextHandle(_Inout_ PFOO_CONTEXT)
 {
 }
 
-void CloseContextHandleRaise(_Inout_ PFOO_CONTEXT)
+static void CloseContextHandleRaise(_Inout_ PFOO_CONTEXT)
 {
-    return RpcMethodReturnsVoid(RPC_X_BAD_STUB_DATA);
+    RpcMethodReturnsVoid(RPC_X_BAD_STUB_DATA);
 }
 
-HRESULT AcquireContextHandle(_In_ handle_t binding, _Out_ PFOO_CONTEXT context)
+static HRESULT AcquireContextHandle(_In_ handle_t binding, _Out_ PFOO_CONTEXT context)
 {
     *context = reinterpret_cast<FOO_CONTEXT>(binding);
     return S_OK;
 }
 
-HRESULT RpcMethodReturnsHResult(HRESULT toReturn, ULONG toRaise)
+static HRESULT RpcMethodReturnsHResult(HRESULT toReturn, ULONG toRaise)
 {
     RpcMethodReturnsVoid(toRaise);
     return toReturn;
 }
 
-GUID RpcMethodReturnsGuid(ULONG toRaise)
+static GUID RpcMethodReturnsGuid(ULONG toRaise)
 {
     RpcMethodReturnsVoid(toRaise);
     return __uuidof(IUnknown);
@@ -71,7 +75,7 @@ TEST_CASE("Rpc::NonThrowing", "[rpc]")
     {
         using foo_context_t = wil::unique_rpc_context_handle<FOO_CONTEXT, decltype(&CloseContextHandle), CloseContextHandle>;
         foo_context_t ctx;
-        auto tempBinding = reinterpret_cast<handle_t>(-5);
+        auto tempBinding = reinterpret_cast<handle_t>(-5); // NOLINT(performance-no-int-to-ptr): Test value
         REQUIRE_SUCCEEDED(wil::invoke_rpc_nothrow(AcquireContextHandle, tempBinding, ctx.put()));
         REQUIRE(ctx.get() == reinterpret_cast<FOO_CONTEXT>(tempBinding));
         ctx.reset();
@@ -80,7 +84,7 @@ TEST_CASE("Rpc::NonThrowing", "[rpc]")
     SECTION("Context Handles Close Raised")
     {
         using foo_context_t = wil::unique_rpc_context_handle<FOO_CONTEXT, decltype(&CloseContextHandleRaise), CloseContextHandleRaise>;
-        foo_context_t ctx{ reinterpret_cast<FOO_CONTEXT>(42) };
+        foo_context_t ctx{reinterpret_cast<FOO_CONTEXT>(42)};
         ctx.reset();
     }
 }
@@ -89,20 +93,25 @@ TEST_CASE("Rpc::NonThrowing", "[rpc]")
 
 #include <sstream>
 
-class WilExceptionMatcher : public Catch::MatcherBase<wil::ResultException>
+class WilExceptionMatcher : public Catch::Matchers::MatcherBase<wil::ResultException>
 {
     HRESULT m_expected;
-public:
-    WilExceptionMatcher(HRESULT ex) : m_expected(ex) { }
 
-    bool match(wil::ResultException const& ex) const override {
-        return ex.GetErrorCode() == m_expected;
+public:
+    WilExceptionMatcher(HRESULT hr) : m_expected(hr)
+    {
     }
 
-    std::string describe() const override {
-        std::ostringstream ss;
-        ss << "wil::ResultException expects code 0x%08lx" << std::hex << m_expected;
-        return ss.str();
+    bool match(wil::ResultException const& exception) const override
+    {
+        return exception.GetErrorCode() == m_expected;
+    }
+
+    std::string describe() const override
+    {
+        std::ostringstream stream;
+        stream << "wil::ResultException expects code 0x%08lx" << std::hex << m_expected;
+        return stream.str();
     }
 };
 
@@ -127,7 +136,8 @@ TEST_CASE("Rpc::Throwing", "[rpc]")
     SECTION("Failures in the fabric")
     {
         REQUIRE_THROWS_WIL_HR(HRESULT_FROM_WIN32(RPC_S_CALL_FAILED), wil::invoke_rpc(RpcMethodReturnsVoid, RPC_S_CALL_FAILED));
-        REQUIRE_THROWS_WIL_HR(HRESULT_FROM_WIN32(RPC_S_CALL_FAILED), wil::invoke_rpc(RpcMethodReturnsHResult, E_CHANGED_STATE, RPC_S_CALL_FAILED));
+        REQUIRE_THROWS_WIL_HR(
+            HRESULT_FROM_WIN32(RPC_S_CALL_FAILED), wil::invoke_rpc(RpcMethodReturnsHResult, E_CHANGED_STATE, RPC_S_CALL_FAILED));
 
         GUID tmp{};
         REQUIRE_THROWS_WIL_HR(HRESULT_FROM_WIN32(RPC_S_CALL_FAILED), tmp = wil::invoke_rpc_result(RpcMethodReturnsGuid, RPC_S_CALL_FAILED));
