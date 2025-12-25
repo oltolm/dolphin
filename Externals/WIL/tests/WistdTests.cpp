@@ -1,3 +1,4 @@
+#include "pch.h"
 
 #include <wil/wistd_functional.h>
 
@@ -5,22 +6,22 @@
 #include "test_objects.h"
 
 // Test methods/objects
-int GetValue()
+static int GetValue()
 {
     return 42;
 }
 
-int GetOtherValue()
+static int GetOtherValue()
 {
     return 8;
 }
 
-int Negate(int value)
+static int Negate(int value)
 {
     return -value;
 }
 
-int Add(int lhs, int rhs)
+static int Add(int lhs, int rhs)
 {
     return lhs + rhs;
 }
@@ -53,9 +54,8 @@ TEST_CASE("WistdFunctionTests::StdFunctionConstructionTest", "[wistd]")
     wistd::function<int()> fn;
 
     {
-        value_holder holder{ 42 };
-        std::function<int()> stdFn = [holder]()
-        {
+        value_holder holder{42};
+        std::function<int()> stdFn = [holder]() {
             return holder.value;
         };
 
@@ -70,13 +70,12 @@ TEST_CASE("WistdFunctionTests::CopyConstructionTest", "[wistd]")
 {
     object_counter_state state;
     {
-        wistd::function<int()> copyFrom = [counter = object_counter{ state }]()
-        {
+        wistd::function<int()> copyFrom = [counter = object_counter{state}]() {
             return counter.state->copy_count;
         };
         REQUIRE(0 == copyFrom());
 
-        auto copyTo = copyFrom;
+        auto copyTo = copyFrom; // NOLINT(performance-unnecessary-copy-initialization): Just for testing
         REQUIRE(1 == copyTo());
     }
 
@@ -89,8 +88,7 @@ TEST_CASE("WistdFunctionTests::CopyAssignmentTest", "[wistd]")
     {
         wistd::function<int()> copyTo;
         {
-            wistd::function<int()> copyFrom = [counter = object_counter{ state }]()
-            {
+            wistd::function<int()> copyFrom = [counter = object_counter{state}]() {
                 return counter.state->copy_count;
             };
             REQUIRE(0 == copyFrom());
@@ -108,8 +106,7 @@ TEST_CASE("WistdFunctionTests::MoveConstructionTest", "[wistd]")
 {
     object_counter_state state;
     {
-        wistd::function<int()> moveFrom = [counter = object_counter{ state }]()
-        {
+        wistd::function<int()> moveFrom = [counter = object_counter{state}]() {
             return counter.state->copy_count;
         };
         REQUIRE(0 == moveFrom());
@@ -130,8 +127,7 @@ TEST_CASE("WistdFunctionTests::MoveAssignmentTest", "[wistd]")
     {
         wistd::function<int()> moveTo;
         {
-            wistd::function<int()> moveFrom = [counter = object_counter{ state }]()
-            {
+            wistd::function<int()> moveFrom = [counter = object_counter{state}]() {
                 return counter.state->copy_count;
             };
             REQUIRE(0 == moveFrom());
@@ -156,8 +152,7 @@ TEST_CASE("WistdFunctionTests::SwapTest", "[wistd]")
         REQUIRE_FALSE(first != nullptr);
         REQUIRE_FALSE(second != nullptr);
 
-        first = [counter = object_counter{ state }]()
-        {
+        first = [counter = object_counter{state}]() {
             return counter.state->copy_count;
         };
 
@@ -171,8 +166,7 @@ TEST_CASE("WistdFunctionTests::SwapTest", "[wistd]")
         REQUIRE_FALSE(second != nullptr);
         REQUIRE(0 == first());
 
-        second = [counter = object_counter{ state }]()
-        {
+        second = [counter = object_counter{state}]() {
             return counter.state->copy_count;
         };
 
@@ -188,22 +182,20 @@ TEST_CASE("WistdFunctionTests::SwapTest", "[wistd]")
 // MSVC's optimizer has had issues with wistd::function in the past when forwarding wistd::function objects to a
 // function that accepts the arguments by value. This test exercises the workaround that we have in place. Note
 // that this of course requires building with optimizations enabled
-void ForwardingTest(wistd::function<int()> getValue, wistd::function<int(int)> negate, wistd::function<int(int, int)> add)
+// NOLINTNEXTLINE(performance-unnecessary-value-param): This is testing a very specific scenario
+static void ForwardingTest(wistd::function<int()> getValue, wistd::function<int(int)> negate, wistd::function<int(int, int)> add)
 {
     // Previously, this would cause a runtime crash
     REQUIRE(Add(GetValue(), Negate(8)) == add(getValue(), negate(8)));
 }
 
 template <typename... Args>
-void CallForwardingTest(Args&&... args)
+static void CallForwardingTest(Args&&... args)
 {
     ForwardingTest(wistd::forward<Args>(args)...);
 }
 
 TEST_CASE("WistdFunctionTests::OptimizationRegressionTest", "[wistd]")
 {
-    CallForwardingTest(
-        wistd::function<int()>(GetValue),
-        wistd::function<int(int)>(Negate),
-        wistd::function<int(int, int)>(Add));
+    CallForwardingTest(wistd::function<int()>(GetValue), wistd::function<int(int)>(Negate), wistd::function<int(int, int)>(Add));
 }
