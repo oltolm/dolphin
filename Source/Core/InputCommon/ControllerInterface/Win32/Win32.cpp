@@ -16,7 +16,9 @@
 #include "InputCommon/ControllerInterface/WGInput/WGInput.h"
 #include "InputCommon/ControllerInterface/XInput/XInput.h"
 
+#ifdef _MSC_VER
 #pragma comment(lib, "OneCoreUAP.Lib")
+#endif
 
 // TODO is this really needed?
 static Common::Flag s_first_populate_devices_asked;
