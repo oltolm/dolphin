@@ -33,7 +33,9 @@
 #include "Core/HW/WiimoteCommon/WiimoteConstants.h"
 #include "Core/HW/WiimoteCommon/WiimoteReport.h"
 
+#ifdef _MSC_VER
 #pragma comment(lib, "Bthprops.lib")
+#endif
 
 namespace WiimoteReal
 {
@@ -67,8 +69,10 @@ enum class AuthenticationMethod : bool
 
 // BluetoothAuthenticateDevice is marked as deprecated.
 // BluetoothAuthenticateDeviceEx requires a bunch of rigmarole.. maybe some other day.
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4995)
+#endif
 static bool AuthenticateWiimote(HANDLE radio_handle, const BLUETOOTH_RADIO_INFO& radio_info,
                                 BLUETOOTH_DEVICE_INFO_STRUCT* btdi,
                                 AuthenticationMethod auth_method)
@@ -105,7 +109,9 @@ static bool AuthenticateWiimote(HANDLE radio_handle, const BLUETOOTH_RADIO_INFO&
 
   return true;
 }
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 static std::optional<USBUtils::DeviceInfo> GetDeviceInfo(const WCHAR* hid_iface)
 {
