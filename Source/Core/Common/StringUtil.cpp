@@ -836,6 +836,10 @@ std::string UTF16BEToUTF8(const char16_t* str, size_t max_size)
 
 #endif
 
+#ifndef _MSC_VER
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 std::string UTF16ToUTF8(std::u16string_view input)
 {
   return ReEncodeString<UTF16Decoder<char16_t>, UTF8Encoder, char>(input);
@@ -845,6 +849,9 @@ std::u16string UTF8ToUTF16(std::string_view input)
 {
   return ReEncodeString<UTF8Decoder<char>, UTF16Encoder, char16_t>(input);
 }
+#ifndef _MSC_VER
+#pragma GCC diagnostic pop
+#endif
 
 // This is a replacement for path::u8path, which is deprecated starting with C++20.
 std::filesystem::path StringToPath(std::string_view path)
@@ -878,7 +885,7 @@ std::vector<std::string> CommandLineToUtf8Argv(const wchar_t* command_line)
     return {};
 
   std::vector<std::string> argv(nargs);
-  for (size_t i = 0; i < nargs; ++i)
+  for (int i = 0; i < nargs; ++i)
   {
     argv[i] = WStringToUTF8(tokenized[i]);
   }
