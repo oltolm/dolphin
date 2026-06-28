@@ -7,6 +7,8 @@
 
 #include "VideoBackends/D3D12/DX12Context.h"
 
+#include <cstring>
+
 namespace DX12
 {
 DescriptorAllocator::DescriptorAllocator() = default;
