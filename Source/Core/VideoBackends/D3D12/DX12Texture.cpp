@@ -13,6 +13,8 @@
 #include "VideoBackends/D3D12/DX12Context.h"
 #include "VideoBackends/D3D12/DescriptorHeapManager.h"
 
+#include <cstring>
+
 namespace DX12
 {
 static D3D12_BOX RectangleToBox(const MathUtil::Rectangle<int>& rc)

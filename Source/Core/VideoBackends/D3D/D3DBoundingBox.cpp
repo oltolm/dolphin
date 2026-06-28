@@ -13,6 +13,8 @@
 #include "VideoBackends/D3D/D3DState.h"
 #include "VideoBackends/D3DCommon/D3DCommon.h"
 
+#include <cstring>
+
 namespace DX11
 {
 D3DBoundingBox::~D3DBoundingBox()
