@@ -259,7 +259,7 @@ void NetworkWidget::ConnectWidgets()
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
   using CheckState = Qt::CheckState;
-  static constexpr auto checkStateChanged = &QCheckBox::checkStateChanged;
+  static const auto checkStateChanged = &QCheckBox::checkStateChanged;
 #else
   using CheckState = int;
   static constexpr auto checkStateChanged = &QCheckBox::stateChanged;
