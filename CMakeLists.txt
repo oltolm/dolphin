@@ -3,7 +3,7 @@
 #
 cmake_minimum_required(VERSION 3.25...4.2.1)
 
-cmake_policy(SET CMP0080 OLD) # allow using BundleUtilities at configure time
+#cmake_policy(SET CMP0080 OLD) # allow using BundleUtilities at configure time
 
 # Minimum OS X version.
 # This is inserted into the Info.plist as well.
@@ -741,7 +741,7 @@ else()
 endif()
 
 if (WIN32)
-  include_directories(Externals/wil/include)
+  include_directories(SYSTEM Externals/wil/include)
   include_directories(Externals/OpenAL/include)
 endif()
 
