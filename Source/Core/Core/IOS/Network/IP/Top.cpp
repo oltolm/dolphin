@@ -58,7 +58,7 @@
 #include <linux/rtnetlink.h>
 #endif
 
-auto format_as(addrinfo hints)
+static auto format_as(addrinfo hints)
 {
   return fmt::format("flags={}, family={}, socktype={}, protocol={}, addrlen={}", hints.ai_flags,
                      hints.ai_family, hints.ai_socktype, hints.ai_protocol, hints.ai_addrlen);
